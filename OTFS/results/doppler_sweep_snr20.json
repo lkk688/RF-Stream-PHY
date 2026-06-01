@@ -1,0 +1,100 @@
+{
+  "snr_db": 20.0,
+  "n_trials": 30,
+  "tap_delay": 3,
+  "tap_db": -3.0,
+  "ldpc": {
+    "k": 256,
+    "n": 512
+  },
+  "rows": [
+    {
+      "fd_hz": 0.0,
+      "otfs_pkt_ok": 30,
+      "otfs_raw_ok": 0,
+      "otfs_raw_ber_mean": 0.001584201388888889,
+      "ofdm_pkt_ok": 30,
+      "ofdm_raw_ok": 0,
+      "ofdm_raw_ber_mean": 0.00010850694444444444,
+      "n_trials": 30,
+      "elapsed_s": 10.436033725738525
+    },
+    {
+      "fd_hz": 100.0,
+      "otfs_pkt_ok": 30,
+      "otfs_raw_ok": 0,
+      "otfs_raw_ber_mean": 0.0010850694444444443,
+      "ofdm_pkt_ok": 30,
+      "ofdm_raw_ok": 0,
+      "ofdm_raw_ber_mean": 0.004079861111111111,
+      "n_trials": 30,
+      "elapsed_s": 14.630919694900513
+    },
+    {
+      "fd_hz": 300.0,
+      "otfs_pkt_ok": 30,
+      "otfs_raw_ok": 0,
+      "otfs_raw_ber_mean": 0.002864583333333333,
+      "ofdm_pkt_ok": 1,
+      "ofdm_raw_ok": 0,
+      "ofdm_raw_ber_mean": 0.07391493055555555,
+      "n_trials": 30,
+      "elapsed_s": 10.455066919326782
+    },
+    {
+      "fd_hz": 500.0,
+      "otfs_pkt_ok": 30,
+      "otfs_raw_ok": 0,
+      "otfs_raw_ber_mean": 0.004644097222222223,
+      "ofdm_pkt_ok": 0,
+      "ofdm_raw_ok": 0,
+      "ofdm_raw_ber_mean": 0.13951822916666665,
+      "n_trials": 30,
+      "elapsed_s": 5.4591522216796875
+    },
+    {
+      "fd_hz": 1000.0,
+      "otfs_pkt_ok": 30,
+      "otfs_raw_ok": 0,
+      "otfs_raw_ber_mean": 0.017165798611111113,
+      "ofdm_pkt_ok": 0,
+      "ofdm_raw_ok": 0,
+      "ofdm_raw_ber_mean": 0.2513671875,
+      "n_trials": 30,
+      "elapsed_s": 13.426843404769897
+    },
+    {
+      "fd_hz": 2000.0,
+      "otfs_pkt_ok": 20,
+      "otfs_raw_ok": 0,
+      "otfs_raw_ber_mean": 0.07345920138888888,
+      "ofdm_pkt_ok": 0,
+      "ofdm_raw_ok": 0,
+      "ofdm_raw_ber_mean": 0.25733506944444445,
+      "n_trials": 30,
+      "elapsed_s": 10.481796741485596
+    },
+    {
+      "fd_hz": 3000.0,
+      "otfs_pkt_ok": 11,
+      "otfs_raw_ok": 0,
+      "otfs_raw_ber_mean": 0.1284722222222222,
+      "ofdm_pkt_ok": 0,
+      "ofdm_raw_ok": 0,
+      "ofdm_raw_ber_mean": 0.2199001736111111,
+      "n_trials": 30,
+      "elapsed_s": 12.215586185455322
+    },
+    {
+      "fd_hz": 5000.0,
+      "otfs_pkt_ok": 0,
+      "otfs_raw_ok": 0,
+      "otfs_raw_ber_mean": 0.23446180555555557,
+      "ofdm_pkt_ok": 0,
+      "ofdm_raw_ok": 0,
+      "ofdm_raw_ber_mean": 0.1875,
+      "n_trials": 30,
+      "elapsed_s": 11.258123397827148
+    }
+  ]
+}

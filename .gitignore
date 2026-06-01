@@ -1,3 +1,34 @@
+# ── Bulk experiment data — published to HuggingFace, not git ─────────
+# OTFS staging dir (3 GB of NPZ captures + IQ files; mirrored at
+# https://huggingface.co/datasets/lkk688/rf-stream-otfs)
+OTFS/data_staging/
+
+# Raw IQ / capture artefacts that may end up scattered during testing
+*.npz
+*.iq
+*.iq.tx_meta.json
+*.iq.tx_truth.jsonl
+
+# Local-only run dirs (per-experiment captures live under hf staging or HF)
+**/runs/
+**/rf_stream_rx_runs*/
+**/ber_sweep_v*/
+**/airlink/
+
+# LaTeX build artefacts (kept .tex + .pdf, drop the rest)
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# Misc
+.DS_Store
+upload_log.txt
+
+# ── Standard Python ignores ───────────────────────────────────────────
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

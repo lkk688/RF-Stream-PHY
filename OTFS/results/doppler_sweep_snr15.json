@@ -1,0 +1,89 @@
+{
+  "snr_db": 15.0,
+  "n_trials": 30,
+  "tap_delay": 3,
+  "tap_db": -3.0,
+  "ldpc": {
+    "k": 256,
+    "n": 512
+  },
+  "rows": [
+    {
+      "fd_hz": 0.0,
+      "otfs_pkt_ok": 23,
+      "otfs_raw_ok": 0,
+      "otfs_raw_ber_mean": 0.07465277777777778,
+      "ofdm_pkt_ok": 30,
+      "ofdm_raw_ok": 0,
+      "ofdm_raw_ber_mean": 0.0068142361111111095,
+      "n_trials": 30,
+      "elapsed_s": 8.443480968475342
+    },
+    {
+      "fd_hz": 100.0,
+      "otfs_pkt_ok": 25,
+      "otfs_raw_ok": 0,
+      "otfs_raw_ber_mean": 0.07083333333333332,
+      "ofdm_pkt_ok": 30,
+      "ofdm_raw_ok": 0,
+      "ofdm_raw_ber_mean": 0.017078993055555557,
+      "n_trials": 30,
+      "elapsed_s": 16.078474044799805
+    },
+    {
+      "fd_hz": 500.0,
+      "otfs_pkt_ok": 17,
+      "otfs_raw_ok": 0,
+      "otfs_raw_ber_mean": 0.08917100694444445,
+      "ofdm_pkt_ok": 0,
+      "ofdm_raw_ok": 0,
+      "ofdm_raw_ber_mean": 0.15483940972222224,
+      "n_trials": 30,
+      "elapsed_s": 16.001792430877686
+    },
+    {
+      "fd_hz": 1000.0,
+      "otfs_pkt_ok": 15,
+      "otfs_raw_ok": 0,
+      "otfs_raw_ber_mean": 0.10779079861111111,
+      "ofdm_pkt_ok": 0,
+      "ofdm_raw_ok": 0,
+      "ofdm_raw_ber_mean": 0.24581163194444447,
+      "n_trials": 30,
+      "elapsed_s": 12.96260380744934
+    },
+    {
+      "fd_hz": 2000.0,
+      "otfs_pkt_ok": 5,
+      "otfs_raw_ok": 0,
+      "otfs_raw_ber_mean": 0.15850694444444444,
+      "ofdm_pkt_ok": 0,
+      "ofdm_raw_ok": 0,
+      "ofdm_raw_ber_mean": 0.2656032986111111,
+      "n_trials": 30,
+      "elapsed_s": 10.437280893325806
+    },
+    {
+      "fd_hz": 3000.0,
+      "otfs_pkt_ok": 0,
+      "otfs_raw_ok": 0,
+      "otfs_raw_ber_mean": 0.2005425347222222,
+      "ofdm_pkt_ok": 0,
+      "ofdm_raw_ok": 0,
+      "ofdm_raw_ber_mean": 0.22881944444444438,
+      "n_trials": 30,
+      "elapsed_s": 7.852031230926514
+    },
+    {
+      "fd_hz": 5000.0,
+      "otfs_pkt_ok": 0,
+      "otfs_raw_ok": 0,
+      "otfs_raw_ber_mean": 0.27680121527777773,
+      "ofdm_pkt_ok": 0,
+      "ofdm_raw_ok": 0,
+      "ofdm_raw_ber_mean": 0.1964409722222222,
+      "n_trials": 30,
+      "elapsed_s": 9.65077519416809
+    }
+  ]
+}
