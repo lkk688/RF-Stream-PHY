@@ -7,11 +7,11 @@ Reads:
     OTFS/results/doppler_sweep_snr{10,15,20}.json
     OTFS/results/monostatic_summary.json
 Writes:
-    OTFS/paper_figures/fig_otfs_chain.pdf
-    OTFS/paper_figures/fig_doppler_sweep.pdf
-    OTFS/paper_figures/fig_closed_grid.pdf
-    OTFS/paper_figures/fig_monostatic_cfo.pdf
-    OTFS/paper_figures/fig_monostatic_pkt.pdf
+    OTFS/figures/fig_otfs_chain.pdf
+    OTFS/figures/fig_doppler_sweep.pdf
+    OTFS/figures/fig_closed_grid.pdf
+    OTFS/figures/fig_monostatic_cfo.pdf
+    OTFS/figures/fig_monostatic_pkt.pdf
 """
 
 import json
@@ -28,7 +28,7 @@ from matplotlib.lines import Line2D
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, ".."))
 RES  = os.path.join(ROOT, "results")
-FIG  = os.path.join(ROOT, "paper_figures")
+FIG  = os.path.join(ROOT, "figures")
 os.makedirs(FIG, exist_ok=True)
 
 # IEEE-friendly defaults: small fonts, tight layout, vector PDF

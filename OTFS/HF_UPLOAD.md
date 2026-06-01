@@ -1,6 +1,6 @@
 # Uploading the OTFS dataset to HuggingFace
 
-This document captures the plan for releasing the OTFS experiment data on the HuggingFace Hub at `lkk688/rf-stream-otfs`.  The data referenced in [`paper/globecom2026_otfs_doppler.pdf`](paper/globecom2026_otfs_doppler.pdf) totals ~1.7 GB (raw IQ captures + tx-truth + summaries) and is too large to commit to the git repo.
+This document captures the procedure for releasing the OTFS experiment data on the HuggingFace Hub at `lkk688/rf-stream-otfs`.  The data referenced in the paper (see [`README.md`](README.md) §Open dataset) totals ~3.0 GB (raw IQ captures + tx-truth + summaries) and is too large to commit to the git repo.
 
 ## What is in the dataset
 

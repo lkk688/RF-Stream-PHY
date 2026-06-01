@@ -1,6 +1,6 @@
 # OTFS — Hardware-Validated OTFS+LDPC on PlutoSDR
 
-> **Paper:** *Hardware-Validated OTFS+LDPC on PlutoSDR: Synthetic Doppler Injection and Monostatic-Loopback Mobility Sensing* — submitted to **IEEE Globecom 2026**. PDF in [`paper/globecom2026_otfs_doppler.pdf`](paper/globecom2026_otfs_doppler.pdf).
+> **Paper:** *Hardware-Validated OTFS+LDPC on PlutoSDR: Synthetic Doppler Injection and Monostatic-Loopback Mobility Sensing* — submitted to **IEEE Globecom 2026**. PDF will be available on the official proceedings / arXiv once accepted; LaTeX source lives in our internal development repo. This subproject contains the full code, results, and the open dataset that the paper builds on.
 
 This subproject implements an end-to-end OTFS (Orthogonal Time Frequency Space) physical layer with 5G NR LDPC outer coding on commodity PlutoSDR, plus the tooling to compare it against an OFDM baseline under controlled Doppler — including a **single-Pluto monostatic loopback** that eliminates LO drift for fine mobility studies.
 
@@ -43,10 +43,8 @@ The full story (closed 2×2 grid, OTA Doppler sweep, software Doppler sweep at S
 | [`ofdm_ldpc_postdecode.py`](ofdm_ldpc_postdecode.py) | Reads step10 RX NPZs, computes QPSK soft LLRs, runs LDPC decode, reports raw and post-LDPC packet rates |
 | [`test_otfs_loopback.py`](test_otfs_loopback.py) | Software loopback BER/pkt sweep across SNR for three channel scenarios (AWGN, static MP, doubly-selective). Regression test for the chain |
 
-### Paper artefacts
-- [`paper/`](paper/) — IEEE conference paper LaTeX source + compiled PDF, IEEEtran class
-- [`paper_figures/`](paper_figures/) — vector PDFs used in the paper (regenerable via `scripts/generate_paper_figures.py`)
-- [`scripts/generate_paper_figures.py`](scripts/generate_paper_figures.py) — regenerates all figures from `results/*.json`
+### Figures script
+- [`scripts/generate_paper_figures.py`](scripts/generate_paper_figures.py) — regenerates all paper figures from `results/*.json` into `OTFS/figures/`.  Useful to inspect or modify the plots without the paper-side LaTeX source.
 
 ### Results and reports
 - [`results/`](results/) — machine-readable summaries (JSON) used to generate paper figures: `doppler_sweep_snr{10,15,20}.json`, `monostatic_summary.json`, `otfs_loopback_results.json`
