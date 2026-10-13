@@ -212,19 +212,27 @@ Also published: ONNX exports under `onnx/` and reference benchmark JSONs under `
 
 ```bibtex
 @inproceedings{liu2026autodataphy,
-  title     = {Real-Radio {OFDM} Prototype with Automated Data Collection
-               and Neural Gate for Deep Learning-Aided Packet Detection},
-  author    = {Liu, Kaikai},
-  booktitle = {Proc. IEEE Global Communications Conference (Globecom)},
+  title     = {Automated Data Collection and Annotation for Deep Learning-Aided
+               Packet Detection},
+  author    = {Liu, Nairui and Zhou, Miaosen and Liu, Kaikai},
+  booktitle = {Proc. IEEE Global Communications Conference (GLOBECOM)},
   year      = {2026}
 }
 
-@inproceedings{liu2026multitask,
+@inproceedings{liu2026otfs,
+  title     = {Open {Python/PyTorch} {OTFS-LDPC} on {PlutoSDR}: Hardware-Validated
+               {Doppler} Injection and Monostatic {ISAC} Loopback},
+  author    = {Liu, Kaikai},
+  booktitle = {Proc. IEEE Military Communications Conference (MILCOM)},
+  year      = {2026}
+}
+
+@misc{liu2026multitask,
   title     = {Multi-Task Preamble Intelligence: Joint Packet Detection,
                Modulation Classification, and {SNR} Estimation with
                Phase-Rotation Augmentation for {OTA} Generalisation},
   author    = {Liu, Kaikai},
-  booktitle = {Proc. IEEE Global Communications Conference (Globecom)},
+  note      = {Manuscript},
   year      = {2026}
 }
 ```

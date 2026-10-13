@@ -1,6 +1,6 @@
 # AutoDataPHY — Automated Real-Radio OFDM Data Collection with Neural Packet Detection
 
-> **Paper:** *Real-Radio OFDM Prototype with Automated Data Collection and Neural Gate for Deep Learning-Aided Packet Detection* — submitted to **IEEE Globecom 2026**.
+> **Paper:** *Automated Data Collection and Annotation for Deep Learning-Aided Packet Detection* — N. Liu, M. Zhou, K. Liu, **IEEE GLOBECOM 2026**.
 
 AutoDataPHY is the **data-centric foundation** of the RF-Stream-PHY framework. It builds a complete OFDM PHY in Python on a single Pluto SDR pair (TX on Jetson Orin, RX on x86), and uses every captured packet — both passes **and** failures — to grow a labelled dataset that later trains neural receivers (used by the MT-ATTN subproject in the same repo).
 
@@ -122,10 +122,10 @@ See [../DATASET.md](../DATASET.md) for the full dataset card.
 
 ```bibtex
 @inproceedings{liu2026autodataphy,
-  title     = {Real-Radio {OFDM} Prototype with Automated Data Collection
-               and Neural Gate for Deep Learning-Aided Packet Detection},
-  author    = {Liu, Kaikai},
-  booktitle = {Proc. IEEE Global Communications Conference (Globecom)},
+  title     = {Automated Data Collection and Annotation for Deep Learning-Aided
+               Packet Detection},
+  author    = {Liu, Nairui and Zhou, Miaosen and Liu, Kaikai},
+  booktitle = {Proc. IEEE Global Communications Conference (GLOBECOM)},
   year      = {2026}
 }
 ```
