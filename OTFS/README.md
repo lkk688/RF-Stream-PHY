@@ -1,6 +1,6 @@
 # OTFS — Hardware-Validated OTFS+LDPC on PlutoSDR
 
-> **Paper:** *Hardware-Validated OTFS+LDPC on PlutoSDR: Synthetic Doppler Injection and Monostatic-Loopback Mobility Sensing* — submitted to **IEEE Globecom 2026**. PDF will be available on the official proceedings / arXiv once accepted; LaTeX source lives in our internal development repo. This subproject contains the full code, results, and the open dataset that the paper builds on.
+> **Paper:** *Open Python/PyTorch OTFS-LDPC on PlutoSDR: Hardware-Validated Doppler Injection and Monostatic ISAC Loopback* — K. Liu, **IEEE MILCOM 2026**. LaTeX source lives in our internal development repo. New to OTFS? See the [tutorial in the top-level README](../README.md#tutorial-otfs-from-scratch--communication-and-radar). This subproject contains the full code, results, and the open dataset that the paper builds on.
 
 This subproject implements an end-to-end OTFS (Orthogonal Time Frequency Space) physical layer with 5G NR LDPC outer coding on commodity PlutoSDR, plus the tooling to compare it against an OFDM baseline under controlled Doppler — including a **single-Pluto monostatic loopback** that eliminates LO drift for fine mobility studies.
 
@@ -159,11 +159,10 @@ If you use this code or data, please cite:
 
 ```bibtex
 @inproceedings{liu2026otfs,
-  title  = {Hardware-Validated {OTFS}+{LDPC} on {PlutoSDR}:
-            Synthetic Doppler Injection and Monostatic-Loopback Mobility Sensing},
-  author = {Liu, Kaikai},
-  booktitle = {Proc. IEEE Globecom},
-  year   = {2026},
-  note   = {Code: \url{https://github.com/lkk688/RF-Stream-PHY/tree/main/OTFS}}
+  title     = {Open {Python/PyTorch} {OTFS-LDPC} on {PlutoSDR}: Hardware-Validated
+               {Doppler} Injection and Monostatic {ISAC} Loopback},
+  author    = {Liu, Kaikai},
+  booktitle = {Proc. IEEE Military Communications Conference (MILCOM)},
+  year      = {2026}
 }
 ```

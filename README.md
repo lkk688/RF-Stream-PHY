@@ -4,13 +4,15 @@
 
 ## Subprojects
 
-The repository is organised around three research subprojects, each corresponding to a paper submitted to **IEEE Globecom 2026**:
+The repository is organised around three research subprojects:
 
 | Folder | Paper | Focus |
 |---|---|---|
-| [`AutoDataPHY/`](./AutoDataPHY/) | *Real-Radio OFDM Prototype with Automated Data Collection and Neural Gate for Deep Learning-Aided Packet Detection* | End-to-end OFDM PHY in Python, self-supervised CRC-based labelling, two-stage neural packet gate |
-| [`MT-ATTN/`](./MT-ATTN/) | *Multi-Task Preamble Intelligence: Joint Packet Detection, Modulation Classification, and SNR Estimation with Phase-Rotation Augmentation for OTA Generalisation* | Multi-task neural receiver (gate + mod + SNR) with temporal self-attention and phase-rotation augmentation for OTA generalisation |
-| [`OTFS/`](./OTFS/) | *Hardware-Validated OTFS+LDPC on PlutoSDR: Synthetic Doppler Injection and Monostatic-Loopback Mobility Sensing* | OTFS PHY with 5G NR LDPC outer coding on commodity PlutoSDR; phase-continuous synthetic Doppler injection; **single-Pluto monostatic loopback** that eliminates LO drift (554× CFO reduction) and a hand-wave motion test that boosts OTFS decode from 0 % → 45 % on the same channel |
+| [`AutoDataPHY/`](./AutoDataPHY/) | *Automated Data Collection and Annotation for Deep Learning-Aided Packet Detection* — **IEEE GLOBECOM 2026** | End-to-end OFDM PHY in Python, self-supervised CRC-based labelling, two-stage neural packet gate |
+| [`OTFS/`](./OTFS/) | *Open Python/PyTorch OTFS-LDPC on PlutoSDR: Hardware-Validated Doppler Injection and Monostatic ISAC Loopback* — **IEEE MILCOM 2026** | OTFS PHY with 5G NR LDPC outer coding on commodity PlutoSDR; phase-continuous synthetic Doppler injection; **single-Pluto monostatic loopback** that eliminates LO drift (554× CFO reduction) and a hand-wave motion test that boosts OTFS decode from 0 % → 45 % on the same channel |
+| [`MT-ATTN/`](./MT-ATTN/) | *Multi-Task Preamble Intelligence: Joint Packet Detection, Modulation Classification, and SNR Estimation with Phase-Rotation Augmentation for OTA Generalisation* — manuscript | Multi-task neural receiver (gate + mod + SNR) with temporal self-attention and phase-rotation augmentation for OTA generalisation |
+
+New to OTFS? Start with the [OTFS tutorial](#tutorial-otfs-from-scratch--communication-and-radar) below.
 
 `AutoDataPHY` builds the PHY, collects the data, and trains the packet gate.  `MT-ATTN` consumes the same captures to train a unified multi-task model that runs in 0.25 ms on Jetson Orin TRT.  `OTFS` extends the framework to a delay-Doppler waveform and adds infrastructure for controlled-Doppler mobility validation (synthetic injection + monostatic loopback).
 
@@ -114,6 +116,169 @@ snapshot_download('lkk688/ofdm-preamble-intelligence', repo_type='dataset',
 
 For a guided walkthrough — data loading, training, evaluation, ONNX/TensorRT deployment, and full paper reproduction — see [`MT-ATTN/TUTORIAL.md`](./MT-ATTN/TUTORIAL.md).
 
+## Tutorial: OTFS from scratch — communication and radar
+
+This is a short, teaching-level walk through OTFS (Orthogonal Time Frequency Space): what it is, how it
+differs from OFDM, and how one transmitted frame serves both **communication** and **radar**. All code below
+comes from one self-contained script (NumPy + Matplotlib, about 40 s on a laptop) that also draws every figure:
+
+```bash
+python3 OTFS/tutorial/otfs_tutorial.py      # writes OTFS/tutorial/figs/fig1..fig5
+```
+
+The hardware receiver in [`OTFS/otfs/`](./OTFS/otfs/) adds what a real radio needs (preamble sync, CFO
+correction, LDPC, PlutoSDR I/O). The tutorial leaves these out so that only the ideas remain.
+
+### 1. The idea: describe the channel by *delay* and *Doppler*
+
+A wireless channel is a handful of reflectors. Each reflector is described by two numbers:
+- a **delay** τ, set by its distance;
+- a **Doppler shift** ν, set by its relative speed.
+
+OFDM works on the **time–frequency (TF)** grid of subcarrier × symbol. On that grid the same channel looks
+busy: it fades across frequency (multipath), and under mobility it also changes from symbol to symbol (Doppler).
+
+OTFS puts the data on the **delay–Doppler (DD)** grid instead: M delay bins × N Doppler bins. There the
+channel is just a few spots, one per reflector, and it stays the same for the whole frame.
+
+| Grid step | Formula | Meaning |
+|---|---|---|
+| Delay resolution | 1/(MΔf) | one sample period |
+| Doppler resolution | 1/(NT) | one over the frame length |
+
+The modulator is an ordinary OFDM modulator with a 2-D transform in front of it:
+
+```python
+def isfft(X):                      # DD grid (M delay x N Doppler) -> TF grid (M subcarriers x N symbols)
+    M, N = X.shape
+    return np.fft.fft(np.fft.ifft(X, axis=1), axis=0) * np.sqrt(N / M)
+
+def otfs_mod(X):                   # ISFFT, then IFFT per symbol (an OFDM modulator); one CP for the frame
+    M, N = X.shape
+    s_tf = np.fft.ifft(isfft(X), axis=0) * np.sqrt(M)
+    return s_tf.reshape(-1, order="F")
+
+def otfs_demod(r, M, N):           # FFT per symbol, then SFFT (the inverse of ISFFT)
+    R = r.reshape(M, N, order="F")
+    return sfft(np.fft.fft(R, axis=0) / np.sqrt(M))
+```
+
+![DD grid, TF footprint of one DD symbol, transmitted samples](OTFS/tutorial/figs/fig1_grids.png)
+
+The middle panel shows the key property: **one DD symbol covers the entire TF plane**. Every data symbol
+therefore experiences all the frequency fading and all the time variation of the channel, and is averaged over
+them. This is the full time-frequency diversity that OTFS is known for.
+
+### 2. OFDM vs OTFS at a glance
+
+| | OFDM | OTFS |
+|---|---|---|
+| Where symbols live | TF grid: subcarrier × OFDM symbol | DD grid: delay × Doppler |
+| What one symbol sees | One complex gain on its subcarrier, which drifts over time under Doppler | All paths, as a few shifted copies: a 2-D convolution over the DD grid |
+| Effect of Doppler | Inter-carrier interference (ICI) and time variation, so pilots must be dense or tracked | A shift along the Doppler axis: resolved, not interference |
+| Pilots | Scattered or comb pilots over the TF grid | One embedded pilot plus a guard region |
+| Equalizer | One tap per subcarrier (cheap) | DD-domain equalizer: LMMSE or message passing (costlier) |
+| Cyclic prefix | One per OFDM symbol | One per frame (or per block) |
+| Radar view | Range–Doppler after TF processing | The DD grid *is* the range–velocity grid |
+
+### 3. Communication, step by step
+
+**Step 1: build a frame.** Place QPSK data on the DD grid with one strong pilot. Around the pilot, leave a
+guard band of empty delay rows, as wide as the largest delay spread (grey region in Fig. 1, left).
+
+```python
+mask = np.ones((M, N), bool)                                   # True = data cell
+mask[np.arange(lp - lmax, lp + lmax + 1) % M, :] = False        # guard rows, all Doppler bins
+X[mask] = QPSK[sym];  X[lp, kp] = pilot                         # data + pilot
+```
+
+**Step 2: the channel.** Each path delays the signal by l samples and rotates it by its Doppler. The frame CP
+makes the delay cyclic.
+
+```python
+def channel(s, paths):             # paths: [(gain h, delay l, Doppler k), ...]
+    MN = s.size;  n = np.arange(MN)
+    return sum(h * np.roll(s, l) * np.exp(2j * np.pi * k * n / MN) for h, l, k in paths)
+```
+
+**Step 3: receive and read the channel.** After `otfs_demod`, the pilot reappears once per path, at
+(pilot delay + l, pilot Doppler + k). Channel estimation is just reading those cells: any cell 3σ above the
+noise counts as a tap, and the gain is the reading divided by the pilot.
+
+![received DD grid and pilot response](OTFS/tutorial/figs/fig2_channel.png)
+
+**Step 4: equalize.** The DD channel is linear, y = H x + w. The tutorial builds H from the estimated taps by
+sending a unit symbol through each cell, then solves an LMMSE problem for the data cells.
+
+```python
+Hd = H[:, data_cells]
+x_hat = np.linalg.solve(Hd.conj().T @ Hd + noise_var * np.eye(Hd.shape[1]), Hd.conj().T @ (y - H @ x_pilot))
+```
+
+This dense solve costs O((MN)³), which is fine for teaching. Real receivers use the sparsity of H instead
+(message passing, conjugate gradients). That cost is why the OTFS receiver is slower than OFDM's one-tap
+equalizer on the Jetson.
+
+**Step 5: compare with OFDM under the same channel.** The setup:
+- 3 paths with delays 0, 2 and 4 samples, and Doppler 0 and ±k bins;
+- 20 dB SNR, uncoded QPSK;
+- OFDM is given **perfect per-symbol channel knowledge** (its best case);
+- OTFS uses only its own pilot.
+
+![constellations](OTFS/tutorial/figs/fig3_constellation.png)
+
+![SER vs Doppler](OTFS/tutorial/figs/fig4_ser_vs_doppler.png)
+
+**Why the curves differ:**
+- **OFDM:** Doppler spreads each subcarrier into its neighbours (ICI), which no one-tap equalizer can undo.
+  Its symbol error rate grows with Doppler, from 0.8% (static) to 3.6% at a Doppler of a quarter subcarrier
+  spacing.
+- **OTFS:** Doppler only moves the channel spots along the Doppler axis, and the DD equalizer separates them;
+  there are no errors at any Doppler.
+- **At zero Doppler:** OTFS still wins, because every symbol is spread over all subcarriers (diversity), while
+  an OFDM symbol on a faded subcarrier is simply lost.
+
+**Fairness notes:**
+- **OTFS cost:** the guard band takes 14% of the cells, and the pilot carries extra energy.
+- **Coding:** with LDPC coding, as in the hardware stack, OFDM recovers much of the static-channel diversity
+  loss, but not the Doppler loss.
+
+### 4. Radar with the same frame
+
+A monostatic ISAC transmitter knows every symbol it sent, so radar needs no pilot. Correlating the echo with
+the transmitted frame at each delay, then taking an FFT over time, gives the **range–Doppler map**. It lands on
+the same DD grid:
+- range = c·l/(2MΔf);
+- velocity = λ·k/(2NT).
+
+```python
+rd = np.array([np.fft.fftshift(np.fft.fft(r * np.conj(np.roll(s, l)))) for l in range(n_range_bins)])
+```
+
+![OTFS radar range-Doppler map](OTFS/tutorial/figs/fig5_radar_rd.png)
+
+In this example (28 GHz, Δf = 120 kHz, 256 × 128 frame):
+
+| Quantity | Value |
+|---|---|
+| Range resolution | 4.9 m |
+| Velocity resolution | 5.0 m/s |
+| Matched-filter gain | 45 dB, so all three targets stand clear even at −10 dB SNR per sample |
+
+The resolution follows two rules:
+- **Range resolution** improves only with bandwidth (MΔf).
+- **Velocity resolution** improves only with frame duration (NT) and carrier frequency.
+
+Real radars also cancel the strong static echoes (clutter) before detection and use CFAR thresholds to
+decide what counts as a target.
+
+### 5. Where to go next
+- **Full hardware chain:** [`OTFS/README.md`](./OTFS/README.md) covers sync, embedded-pilot DD-LMMSE,
+  LDPC, and PlutoSDR scripts.
+- **No-radio experiment:** the software Doppler sweep runs OTFS vs OFDM with LDPC; see
+  `OTFS/doppler_sweep_loopback.py`.
+- **Captures:** the released OTA captures are listed in [Open-Source Dataset and Models](#open-source-dataset-and-models).
+
 ## Status
 
 RF-Stream-PHY is an active research-oriented project under development. The repository will continue to expand with:
@@ -131,35 +296,28 @@ Contributions, discussions, and collaboration are welcome. This project is inten
 
 ## Citation
 
-If you use this project in research, please cite both papers:
+If you use this project in research, please cite:
 
 ```bibtex
-@inproceedings{liu2026autodataphy,
-  title     = {Real-Radio {OFDM} Prototype with Automated Data Collection
-               and Neural Gate for Deep Learning-Aided Packet Detection},
-  author    = {Liu, Kaikai},
-  booktitle = {Proc. IEEE Global Communications Conference (Globecom)},
-  year      = {2026}
-}
-
-@inproceedings{liu2026multitask,
-  title     = {Multi-Task Preamble Intelligence: Joint Packet Detection,
-               Modulation Classification, and {SNR} Estimation with
-               Phase-Rotation Augmentation for {OTA} Generalisation},
-  author    = {Liu, Kaikai},
-  booktitle = {Proc. IEEE Global Communications Conference (Globecom)},
-  year      = {2026}
-}
-
 @inproceedings{liu2026otfs,
-  title     = {Hardware-Validated {OTFS}+{LDPC} on {PlutoSDR}:
-               Synthetic Doppler Injection and Monostatic-Loopback
-               Mobility Sensing},
+  title     = {Open {Python/PyTorch} {OTFS-LDPC} on {PlutoSDR}: Hardware-Validated
+               {Doppler} Injection and Monostatic {ISAC} Loopback},
   author    = {Liu, Kaikai},
-  booktitle = {Proc. IEEE Global Communications Conference (Globecom)},
+  booktitle = {Proc. IEEE Military Communications Conference (MILCOM)},
+  year      = {2026}
+}
+
+@inproceedings{liu2026autodataphy,
+  title     = {Automated Data Collection and Annotation for Deep Learning-Aided
+               Packet Detection},
+  author    = {Liu, Nairui and Zhou, Miaosen and Liu, Kaikai},
+  booktitle = {Proc. IEEE Global Communications Conference (GLOBECOM)},
   year      = {2026}
 }
 ```
+
+The MT-ATTN subproject is described in a manuscript that is not yet published; please cite the
+repository for it until then.
 
 ## License
 
